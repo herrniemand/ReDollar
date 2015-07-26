@@ -36,7 +36,7 @@
             this.pointCount = this.points.length;
             this.firstPoint = this.points[0];
             this.centroid = this.getCentroid();
-            this.translateTo(this.originX, this.originY);
+            this.translateTo(Utils.point(this.originX, this.originY));
 
             this.aabb = Utils.getAABB(this.points);
             if (transform) {
@@ -53,8 +53,10 @@
             // if (this.ignoreRotate){
             //     return 0;
             // }
-            // var iAngle = Math.atan2(this.firstPoint[1] - this.centroid[1], this.firstPoint[0] - this.centroid[0]);
-            var iAngle = Math.atan2(this.firstPoint[1], this.firstPoint[0]);
+            // var iAngle = Math.atan2(this.firstPoint.y - this.centroid.y, this.firstPoint.x - this.centroid.x);
+            // 
+            // var iAngle = Math.atan2(this.firstPoint.x, this.firstPoint.x);
+            var iAngle = Math.atan2(this.firstPoint.x, this.firstPoint.y);
             if (this.rotationInvariance) {
                 var r = this.rotationInvariance;
                 var baseOrientation = r * Math.floor((iAngle + r / 2) / r);
@@ -71,12 +73,10 @@
             var sum = 0;
             var vector = [];
             var len = this.pointCount;
-            for (var i = 0; i < len; i++) {
-                var x = this.points[i][0],
-                    y = this.points[i][1];
-                vector.push(x);
-                vector.push(y);
-                sum += x * x + y * y;
+            for (var i = 0, point; point = this.points[i], i < len; i++) {
+                vector.push(point.x);
+                vector.push(point.y);
+                sum += point.x * point.x + point.y * point.y;
             }
             var magnitude = Math.sqrt(sum);
             len <<= 1;
@@ -90,23 +90,23 @@
             var x = 0,
                 y = 0;
             for (var i = 0; i < this.pointCount; i++) {
-                x += this.points[i][0];
-                y += this.points[i][1];
+                x += this.points[i].x;
+                y += this.points[i].y;
             }
             x /= this.pointCount;
             y /= this.pointCount;
-            return [x, y];
+            return Utils.point(x, y);
         },
-        translateTo: function(x, y) {
+        translateTo: function( point ) {
             var c = this.centroid;
-            c[0] -= x;
-            c[1] -= y;
+            c.x -= point.x;
+            c.y -= point.y;
             for (var i = 0; i < this.pointCount; i++) {
                 var p = this.points[i];
-                var qx = p[0] - c[0];
-                var qy = p[1] - c[1];
-                p[0] = qx;
-                p[1] = qy;
+                var qx = p.x - c.x;
+                var qy = p.y - c.y;
+                p.x = qx;
+                p.y = qy;
             }
         },
 
@@ -115,23 +115,23 @@
             var sin = Math.sin(radians);
             for (var i = 0; i < this.pointCount; i++) {
                 var p = this.points[i];
-                var qx = p[0] * cos - p[1] * sin;
-                var qy = p[0] * sin + p[1] * cos;
-                p[0] = qx;
-                p[1] = qy;
+                var qx = p.y * cos - p.y * sin;
+                var qy = p.y * sin + p.y * cos;
+                p.y = qx;
+                p.y = qy;
             }
         },
 
-        scale: function(scaleX, scaleY) {
+        scale: function( scale ) {
             for (var i = 0; i < this.pointCount; i++) {
                 var p = this.points[i];
-                var qx = p[0] * scaleX;
-                var qy = p[1] * scaleY;
-                p[0] = qx;
-                p[1] = qy;
+                var qx = p.x * scale.x;
+                var qy = p.y * scale.y;
+                p.x = qx;
+                p.y = qy;
             }
-            // this.centroid[0] *= scaleX
-            // this.centroid[1] *= scaleY
+            // this.centroid.x *= scaleX
+            // this.centroid.y *= scaleY
         },
 
         scaleTo: function(width, height) {
@@ -142,14 +142,12 @@
                 var shortSide = Math.min(aabb[4], aabb[5]);
                 var uniformly = shortSide / longSide < this.ratio1D;
                 if (uniformly) {
-                    var scaleX = width / longSide,
-                        scaleY = height / longSide;
-                    return this.scale(scaleX, scaleY);
+                    var scale = Utils.point( width / longSide, height / longSide )
+                    return this.scale(scale);
                 }
             }
-            var scaleX = width / aabb[4],
-                scaleY = height / aabb[5];
-            this.scale(scaleX, scaleY);
+            var scale = Utils.point(width / aabb[4], height / aabb[5]);
+            this.scale(scale);
         },
     };
 

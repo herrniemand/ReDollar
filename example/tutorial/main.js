@@ -34,7 +34,7 @@ var game = new Game({
             },
             update: function(timeStep, now) {
                 if (TouchInfo.touched && this.cooldown <= 0) {
-                    Points.push([TouchInfo.x, TouchInfo.y]);
+                    Points.push(TouchInfo);
                     this.cooldown = 2;
                 }
                 this.cooldown--;
@@ -82,12 +82,12 @@ var game = new Game({
                     drawPoly(context, Points, "blue", 0, 0);
                     context.fillStyle = "red";
                     Points.forEach(function(p) {
-                        context.fillRect(p[0] - 4, p[1] - 4, 8, 8);
+                        context.fillRect(p.x - 4, p.y - 4, 8, 8);
                     });
                 }
                 if (Centroid) {
                     context.fillStyle = "darkgreen";
-                    context.fillRect(Centroid[0] - 5, Centroid[1] - 5, 10, 10);
+                    context.fillRect(Centroid.x - 5, Centroid.y - 5, 10, 10);
                     drawLine(context, Points[0], Centroid, "#6699ff");
                 }
 
@@ -315,12 +315,12 @@ function drawPoly(context, vertices, color, tx, ty) {
     var a = vertices[0];
     var first = a;
     context.beginPath();
-    context.moveTo(a[0] + tx, a[1] + ty);
+    context.moveTo(a.x + tx, a.y + ty);
     for (var j = 1; j < vertexCount; j++) {
         var a = vertices[j];
-        context.lineTo(a[0] + tx, a[1] + ty);
+        context.lineTo(a.x + tx, a.y + ty);
     }
-    // context.lineTo(first[0], first[1]);
+    // context.lineTo(first.x, first.y);
     context.stroke()
     context.closePath();
 }
@@ -332,8 +332,8 @@ function drawLine(context, p1, p2, color, tx, ty) {
         context.strokeStyle = color;
     }
     context.beginPath();
-    context.moveTo(p1[0] + tx, p1[1] + ty);
-    context.lineTo(p2[0] + tx, p2[1] + ty);
+    context.moveTo(p1.x + tx, p1.y + ty);
+    context.lineTo(p2.x + tx, p2.y + ty);
     context.stroke()
     context.closePath();
 }
@@ -376,8 +376,8 @@ function translateTo() {
     if (polyline) {
         step++;
 
-        polyline.translateTo(polyline.originX, polyline.originY);
-        Centroid = [polyline.originX, polyline.originY];
+        polyline.translateTo(Utils.point(polyline.originX, polyline.originY));
+        Centroid = Utils.point(polyline.originX, polyline.originY);
     }
 }
 

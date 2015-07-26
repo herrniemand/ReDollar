@@ -11,10 +11,13 @@
     };
 
     var Utils = ns.Utils = {
+        point: function( x, y ){
+            return { 'x': x, 'y': y };
+        },
 
         distance: function(p1, p2) {
-            var dx = p2[0] - p1[0];
-            var dy = p2[1] - p1[1];
+            var dx = p2.x - p1.x;
+            var dy = p2.y - p1.y;
             return Math.sqrt(dx * dx + dy * dy);
         },
         getAABB: function(points) {
@@ -24,10 +27,10 @@
                 maxY = -Infinity;
             for (var i = 0, len = points.length; i < len; i++) {
                 var p = points[i];
-                minX = Math.min(minX, p[0]);
-                maxX = Math.max(maxX, p[0]);
-                minY = Math.min(minY, p[1]);
-                maxY = Math.max(maxY, p[1]);
+                minX = Math.min(minX, p.x);
+                maxX = Math.max(maxX, p.x);
+                minY = Math.min(minY, p.y);
+                maxY = Math.max(maxY, p.y);
             }
             return [minX, minY, maxX, maxY, maxX - minX, maxY - minY];
         },
@@ -76,18 +79,16 @@
             var I = Utils.polylineLength(points) / (n - 1);
             var D = 0;
             var p1 = points[0];
-            var newPoints = [
-                [p1[0], p1[1]]
-            ];
+            var newPoints = [p1];
             var len = points.length;
             for (var i = 1; i < len;) {
                 var p2 = points[i];
                 var d = Utils.distance(p1, p2);
                 if ((D + d) >= I) {
                     var k = (I - D) / d;
-                    var qx = p1[0] + k * (p2[0] - p1[0]);
-                    var qy = p1[1] + k * (p2[1] - p1[1]);
-                    var q = [qx, qy];
+                    var qx = p1.x + k * (p2.x - p1.x);
+                    var qy = p1.y + k * (p2.y - p1.y);
+                    var q = Utils.point(qx, qy);
                     newPoints.push(q);
                     D = 0;
                     p1 = q;
@@ -98,7 +99,7 @@
                 }
             }
             if (newPoints.length == n - 1) {
-                newPoints.push([points[len - 1][0], points[len - 1][1]]);
+                newPoints.push(points[len - 1]);
             }
             return newPoints;
         }
