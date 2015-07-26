@@ -46,10 +46,10 @@ var game = new Game({
                 var tx = this.width / 2,
                     ty = this.height / 2;
                 var l = 400;
-                drawLine(context, [-l, 0], [l, 0], "#bbbbbb", tx, ty);
-                drawLine(context, [0, -l], [0, l], "#bbbbbb", tx, ty);
-                drawLine(context, [-l, -l], [l, l], "#bbbbbb", tx, ty);
-                drawLine(context, [l, -l], [-l, l], "#bbbbbb", tx, ty);
+                drawLine(context, RD.Utils.point(-l, 0),  RD.Utils.point(l, 0),  "#bbbbbb", tx, ty);
+                drawLine(context, RD.Utils.point(0, -l),  RD.Utils.point(0, l),  "#bbbbbb", tx, ty);
+                drawLine(context, RD.Utils.point(-l, -l), RD.Utils.point(l, l),  "#bbbbbb", tx, ty);
+                drawLine(context, RD.Utils.point(l, -l),  RD.Utils.point(-l, l), "#bbbbbb", tx, ty);
                 context.fillStyle = "#330000";
                 context.fillRect(tx - 3, ty - 3, 6, 6);
 
